@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:http/http.dart' as http;
+import 'package:finteh/gif.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +15,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
-
   // Основной видже приложения.
   @override
   Widget build(BuildContext context) {
@@ -47,6 +48,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  String URL = 'https://media1.giphy.com/media/CBKzbqaQxS7K331lil/giphy.gif?cid=ecf05e4790357d3e67ea05ad66715167ddc4f346b34f7dc4&rid=giphy.gif&ct=g';
+  void _getNextPage(){
+    // PostController _controller;
+    // _controller = new PostController();
+    // _controller.init();
+    //
+    // setState(() {
+    //   URL = (_controller.currentState as GetResultSuccess).gif.gifURL;
+    // });
+
+  }
 
   void _decrementCounter(){
     setState(() {
@@ -102,6 +114,10 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
+            Image.network(
+                  URL,
+                  // "http://static.devli.ru/public/images/gifs/201404/ee0e90eb-29d9-45a5-b748-865fa865c82d.gif",
+            ),
             const Text(
               'You have pushed the button this many times:',
             ),
@@ -131,7 +147,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Icon(
                   Icons.arrow_forward_outlined,
               ),
-              onPressed: _incrementCounter,
+              // onPressed: _incrementCounter,
+              onPressed: _getNextPage,
               heroTag: null,
             )
           ]
