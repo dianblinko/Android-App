@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:mvc_pattern/mvc_pattern.dart';
+
 class Gif{
   // все поля являются private
   // это сделано для инкапсуляции данных
@@ -104,7 +106,7 @@ class Repository {
 
 
 
-class PostController{
+class PostController extends ControllerMVC{
   // создаем наш репозиторий
   final Repository repo = new Repository();
 
@@ -114,16 +116,22 @@ class PostController{
   // первоначальное состояние - загрузка данных
   GetResult currentState = GetResultLoading();
   void init() async {
+    setState(() => currentState = GetResultLoading());
     try {
       // получаем данные из репозитория
       final gif = await repo.fetchGif();
       // если все ок то обновляем состояние на успешное
-      currentState = GetResultSuccess(gif);
-      // setState(() => currentState = GetResultSuccess(gif));
+      // currentState = GetResultSuccess(gif);
+      setState(() => currentState = GetResultSuccess(gif));
     } catch (error) {
       // в противном случае произошла ошибка
-      currentState = GetResultFailure("Нет интернета");
+      // currentState = GetResultFailure("Нет интернета");
+      setState(() => currentState = GetResultFailure("Нет интернета"));
     }
+  }
+
+  void nextGif() async{
+
   }
 
 
