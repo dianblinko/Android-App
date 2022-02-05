@@ -1,45 +1,24 @@
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:mvc_pattern/mvc_pattern.dart';
 
 class Gif{
-  // все поля являются private
-  // это сделано для инкапсуляции данных
   final int _id;
   final String _description;
   final String _gifURL;
 
-  // создаем getters для наших полей
-  // дабы только мы могли читать их
   int get id => _id;
   String get description => _description;
   String get gifURL => _gifURL;
 
-  // Dart позволяет создавать конструкторы с разными именами
-  // В данном случае Post.fromJson(json) - это конструктор
-  // здесь мы принимаем JSON объект поста и извлекаем его поля
-  // обратите внимание, что dynamic переменная
-  // может иметь разные типы: String, int, double и т.д.
   Gif.fromJson(Map<String, dynamic> json) :
-    this._id = json["id"],
-    this._description = json["description"],
-    this._gifURL = json["gifURL"];
+    _id = json["id"],
+    _description = json["description"],
+    _gifURL = json["gifURL"];
 }
-// PostList являются оберткой для массива постов
-// class Get {
-//   final List<Gif> posts = [];
-//   Get.fromJson(Map<String, dynamic> jsonItems) {
-//     for (var jsonItem in jsonItems) {
-//       posts.add(Post.fromJson(jsonItem));
-//     }
-//   }
-// }
 
-
-// наше представление будет получать объекты
-// этого класса и определять конкретный его
-// подтип
+// представление будет получать объекты
+// этого класса и определять конкретный его подтип
 abstract class GetResult {}
 
 // указывает на успешный запрос
@@ -59,7 +38,58 @@ class GetResultLoading extends GetResult {
   GetResultLoading();
 }
 
-const String SERVER = "https://developerslife.ru/random?json=true";
+const String stringUrl = "https://developerslife.ru/random?json=true";
+
+class GifList{
+  final List<Gif> gifList= [];
+  int iter = -1;
+
+  bool isEmpty(){
+    return gifList.isEmpty;
+  }
+
+  bool isFirstGif(){
+    return (iter == 0);
+  }
+
+  bool isLastGif(){
+    return (iter == (gifList.length-1) );
+  }
+
+  void addGif(Gif gif){
+    iter++;
+    gifList.add(gif);
+  }
+
+  Gif getPrev(){
+    iter--;
+    return gifList[iter];
+  }
+
+  Gif getNext(){
+    iter++;
+    return gifList[iter];
+  }
+
+  Gif getCurrent(){
+    return gifList[iter];
+  }
+
+
+}
+
+// class Iterator{
+//   late GifList giflist;
+//   int iterationState;
+//   Iterator(GifList gifList){
+//     this.giflist = gifList;
+//     iterationState = 0;
+//   }
+//
+//   Gif getNext(){
+//
+//   }
+// }
 
 class Repository {
   // обработку ошибок мы сделаем в контроллере
@@ -84,19 +114,14 @@ class Repository {
 //   }
   //асинхронная функция
   Future<Gif> fetchGif() async {
-    print("Вызвали Rep.fetchGif");
-    final url = Uri.parse("$SERVER");
-    print("Rep. запарсили url " + url.toString());
+    final url = Uri.parse(stringUrl);
     // делаем GET запрос
     final response = await http.get(url);
-    print("сделали get запрос");
     if (response.statusCode == 200) {
       // если все ок то возвращаем посты
       // json.decode парсит ответ
-      print("Статус гет запроса = 200");
       return Gif.fromJson(json.decode(response.body));
     } else {
-      print("Статус гет запроса не равен 200");
       // в противном случае говорим об ошибке
       throw Exception("failed request");
     }
@@ -108,7 +133,9 @@ class Repository {
 
 class PostController extends ControllerMVC{
   // создаем наш репозиторий
-  final Repository repo = new Repository();
+  final Repository repo = Repository(); //new?
+
+  GifList gifList= GifList(); //new?
 
   // конструктор нашего контроллера
   PostController();
@@ -116,22 +143,35 @@ class PostController extends ControllerMVC{
   // первоначальное состояние - загрузка данных
   GetResult currentState = GetResultLoading();
   void init() async {
-    setState(() => currentState = GetResultLoading());
-    try {
-      // получаем данные из репозитория
-      final gif = await repo.fetchGif();
-      // если все ок то обновляем состояние на успешное
-      // currentState = GetResultSuccess(gif);
-      setState(() => currentState = GetResultSuccess(gif));
-    } catch (error) {
-      // в противном случае произошла ошибка
-      // currentState = GetResultFailure("Нет интернета");
-      setState(() => currentState = GetResultFailure("Нет интернета"));
+    if (gifList.isLastGif()) {
+      setState(() => currentState = GetResultLoading());
+      try {
+        // получаем данные из репозитория
+        final gif = await repo.fetchGif();
+        // если все ок то обновляем состояние на успешное
+        // currentState = GetResultSuccess(gif);
+        setState(() => currentState = GetResultSuccess(gif));
+        gifList.addGif(gif);
+      } catch (error) {
+        // в противном случае произошла ошибка
+        // currentState = GetResultFailure("Нет интернета");
+        setState(() =>
+        currentState = GetResultFailure("Произошла ошибка при "
+            "загрузке данных. Проверьте подключение к сети."));
+      }
     }
+    else
+      {
+        final gif = gifList.getNext();
+        setState(() => currentState = GetResultSuccess(gif));
+      }
   }
 
-  void nextGif() async{
-
+  void getPrevGif() async{
+    if (!gifList.isFirstGif()){
+      final gif = gifList.getPrev();
+      setState(() => currentState = GetResultSuccess(gif));
+    }
   }
 
 
