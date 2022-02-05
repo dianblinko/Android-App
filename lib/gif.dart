@@ -74,55 +74,17 @@ class GifList{
   Gif getCurrent(){
     return gifList[iter];
   }
-
-
 }
 
-// class Iterator{
-//   late GifList giflist;
-//   int iterationState;
-//   Iterator(GifList gifList){
-//     this.giflist = gifList;
-//     iterationState = 0;
-//   }
-//
-//   Gif getNext(){
-//
-//   }
-// }
-
 class Repository {
-  // обработку ошибок мы сделаем в контроллере
-  // мы возвращаем Future объект, потому что
-  // fetchPhotos асинхронная функция
-  // асинхронные функции не блокируют UI
-//   Future<PostList> fetchPosts() async {
-//     // сначала создаем URL, по которому
-//     // мы будем делать запрос
-//     final url = Uri.parse("$SERVER/posts");
-//     // делаем GET запрос
-//     final response = await http.get(url);
-// // проверяем статус ответа
-//     if (response.statusCode == 200) {
-//       // если все ок то возвращаем посты
-//       // json.decode парсит ответ
-//       return PostList.fromJson(json.decode(response.body));
-//     } else {
-//       // в противном случае говорим об ошибке
-//       throw Exception("failed request");
-//     }
-//   }
   //асинхронная функция
   Future<Gif> fetchGif() async {
     final url = Uri.parse(stringUrl);
     // делаем GET запрос
     final response = await http.get(url);
     if (response.statusCode == 200) {
-      // если все ок то возвращаем посты
-      // json.decode парсит ответ
       return Gif.fromJson(json.decode(response.body));
     } else {
-      // в противном случае говорим об ошибке
       throw Exception("failed request");
     }
   }
@@ -139,7 +101,6 @@ class PostController extends ControllerMVC{
 
   // конструктор нашего контроллера
   PostController();
-  //final url = 'https://i.gifer.com/VAyR.gif';
   // первоначальное состояние - загрузка данных
   GetResult currentState = GetResultLoading();
   void init() async {
@@ -149,14 +110,11 @@ class PostController extends ControllerMVC{
         // получаем данные из репозитория
         final gif = await repo.fetchGif();
         // если все ок то обновляем состояние на успешное
-        // currentState = GetResultSuccess(gif);
         setState(() => currentState = GetResultSuccess(gif));
         gifList.addGif(gif);
       } catch (error) {
         // в противном случае произошла ошибка
-        // currentState = GetResultFailure("Нет интернета");
-        setState(() =>
-        currentState = GetResultFailure("Произошла ошибка при "
+        setState(() => currentState = GetResultFailure("Произошла ошибка при "
             "загрузке данных. Проверьте подключение к сети."));
       }
     }

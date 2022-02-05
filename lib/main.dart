@@ -108,7 +108,6 @@ class _PostListPageState extends StateMVC {
           child: Text(
               state.error,
               textAlign: TextAlign.center,
-              // style: Theme.of(context).textTheme.headline4.copyWith(color: Colors.red)
           ),
         );
       } else {
