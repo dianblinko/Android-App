@@ -1,16 +1,15 @@
-# finteh
+### Вступительное испытание к курсу Android Developer от Тинькофф.Образование ###
 
-A new Flutter project.
+Проект написан на Flutter
 
-## Getting Started
+Приложение позволяет просматривать gif изображения с описанием с сайта developerslife.ru
 
-This project is a starting point for a Flutter application.
+При этот оно имеет следуюший функции:
 
-A few resources to get you started if this is your first Flutter project:
+- На главном экране приложения отображается gif-изображение вместе с его
+описанием, полученным с сайта developerslife.ru 
+- Под изображением располагаются две кнопки:
+  - Одна (кнопка «следующий») загружает следующий рандомный пост.
+  - Вторая — позволяет вернуться к предыдущему посту, который мы сохранили в кэш после загрузки.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![video5348538471814273116 (2)](https://user-images.githubusercontent.com/94291448/161287232-5bc5e788-3dbe-4c40-a1fa-fb0b4aec1586.gif)
